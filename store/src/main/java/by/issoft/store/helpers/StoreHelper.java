@@ -2,9 +2,11 @@ package by.issoft.store.helpers;
 
 import by.issoft.domain.Category;
 import by.issoft.domain.Product;
+import by.issoft.domain.categoryFactory.CategoryCreator;
 import by.issoft.store.Store;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
 
 import by.issoft.store.helpers.comparators.ProductComparator;
@@ -45,23 +47,27 @@ public class StoreHelper {
     private static Map<Category, Integer> createProductListToAdd() {
         Map<Category, Integer> productsToAdd = new HashMap<>();
 
-        Reflections reflections = new Reflections("by.issoft.domain.categories", new SubTypesScanner());
-        //Get all existed subtypes of Category
-        Set<Class<? extends Category>> subTypes = reflections.getSubTypesOf(Category.class);
+        Reflections reflections = new Reflections("by.issoft.domain.categoryFactory", new SubTypesScanner());
+        //Get all existed Category Creators
+        Set<Class<? extends CategoryCreator>> subTypes = reflections.getSubTypesOf(CategoryCreator.class);
 
-        //Create a random number of random products for each category
-        for (Class<? extends Category> type : subTypes) {
+        //Create a random number of random products for each category using CategoryCreators
+        for (Class<? extends CategoryCreator> type : subTypes) {
             try {
                 Random random = new Random();
-                productsToAdd.put(type.getConstructor().newInstance(), random.nextInt(10));
+
+                CategoryCreator creator = type.newInstance();
+                Method method = creator.getClass().getMethod("createCategory");
+
+                productsToAdd.put((Category) method.invoke(creator), random.nextInt(10));
 
             } catch (NoSuchMethodException e) {
                 e.printStackTrace();
             } catch (InvocationTargetException e) {
                 e.printStackTrace();
-            } catch (InstantiationException e) {
-                e.printStackTrace();
             } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InstantiationException e) {
                 e.printStackTrace();
             }
         }

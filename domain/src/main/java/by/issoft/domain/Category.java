@@ -3,14 +3,9 @@ package by.issoft.domain;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Category {
+public abstract class Category {
     public String name;
     public List<Product> productList;
-
-    public Category(String name) {
-
-        this.name = name;
-    }
 
     public void addProduct(Product product) {
         if (productList == null) {

@@ -5,6 +5,6 @@ import by.issoft.domain.Category;
 public class FoodCategory extends Category {
 
     public FoodCategory() {
-        super("Food");
+        name = "Food";
     }
 }
